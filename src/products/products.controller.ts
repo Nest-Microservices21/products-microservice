@@ -26,15 +26,13 @@ export class ProductsController {
   }
 
   @MessagePattern({ cmd: 'product.update' })
- async update(@Payload() updateProductDto: UpdateProductDto) {
-    if (Object.keys(updateProductDto).length === 0) {
-      return { status: HttpStatus.NO_CONTENT }; 
-    }
+  async update(@Payload() updateProductDto: UpdateProductDto) {
+
     const response = await this.productsService.update(
       +updateProductDto.id,
       updateProductDto,
     );
-    return { status: HttpStatus.OK, data: response }; 
+    return response
   }
   @MessagePattern({ cmd: 'product.delete' })
   remove(@Payload('id', ParseIdPipe) id: number) {

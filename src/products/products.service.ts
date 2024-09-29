@@ -1,13 +1,15 @@
-import { HttpStatus, Inject } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { DRIZZLE } from 'src/drizzle/drizzle.module';
 import { DrizzleDB } from 'src/drizzle/types/drizzle';
 import { products } from 'src/drizzle/schema/schema';
 import { PaginationDTO } from 'src/common/dto/pagination.dto';
-import { count, eq } from 'drizzle-orm';
-import { RpcException } from '@nestjs/microservices';
-import {RpcNotFoundErrorException} from "../common/errors/rpc.error"
+import { and, count, eq } from 'drizzle-orm';
+import {
+  RpcNoContentException,
+  RpcNotFoundErrorException,
+} from '../common/exceptions/rpc.exception';
 
 export class ProductsService {
   constructor(@Inject(DRIZZLE) private db: DrizzleDB) {}
@@ -45,12 +47,15 @@ export class ProductsService {
     const product = await this.db.query.products.findFirst({
       where: eq(products.id, id),
     });
-    if (!product) throw new RpcNotFoundErrorException(`Product with id ${id} not Found` );
+    if (!product)
+      throw new RpcNotFoundErrorException(`Product with id ${id} not Found`);
     return { data: product };
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
     const { id: _, ...price } = updateProductDto;
+    if (Object.keys(price).length === 0) throw new RpcNoContentException('');
+
     const productUpdate = await this.db
       .update(products)
       .set(price)
@@ -66,8 +71,14 @@ export class ProductsService {
       .update(products)
       // @ts-ignore
       .set({ available: false })
-      .where(eq(products.id, id))
+      .where(and(eq(products.id, id), eq(products.available, true)))
       .returning();
-    return product;
+    const isMessage = product.length === 0;
+    return {
+      message: isMessage
+        ? 'No resources were deleted'
+        : 'Resource deleted successfully',
+      data: product[0],
+    };
   }
 }

@@ -1,5 +1,5 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
-import {RpcBadErrorException} from "../../common/errors/rpc.error"
+import {RpcBadErrorException} from "../../common/exceptions/rpc.exception"
 @Injectable()
 export class ParseIdPipe implements PipeTransform<string, number> {
   transform(value: string, metadata: ArgumentMetadata) {

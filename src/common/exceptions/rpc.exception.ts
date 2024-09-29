@@ -19,7 +19,16 @@ class  RpcNotFoundErrorException extends RpcException {
     });
   }
 }
+class  RpcNoContentException extends RpcException {
+  constructor(message:string) {
+    super({
+      message,
+      status: HttpStatus.NO_CONTENT,
+    });
+  }
+}
 export {
   RpcNotFoundErrorException,
-  RpcBadErrorException
+  RpcBadErrorException,
+  RpcNoContentException
 }
