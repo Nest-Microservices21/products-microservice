@@ -1,12 +1,15 @@
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-
+import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
+import {RpcBadErrorException} from "../../common/errors/rpc.error"
 @Injectable()
 export class ParseIdPipe implements PipeTransform<string, number> {
   transform(value: string, metadata: ArgumentMetadata) {
-    console.log("xx-",value)
     const val = parseInt(value, 10);
-    if (val <= 0) throw new BadRequestException('id must be possitive');
-    if (isNaN(val)) throw new BadRequestException('id must be number');
+
+    if (val <= 0) throw new RpcBadErrorException('ID must be positive') 
+  
+    if (isNaN(val)) throw new RpcBadErrorException('ID must be positive')
+    
+
     return val;
   }
 }

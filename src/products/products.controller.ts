@@ -4,10 +4,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PaginationDTO } from 'src/common/dto/pagination.dto';
 import { ParseIdPipe } from './pipe/parseId.pipe';
-import { Response } from 'express';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
-@Controller('products')
+@Controller()
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
