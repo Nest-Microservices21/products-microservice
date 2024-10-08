@@ -9,6 +9,7 @@ import { DrizzleModule } from './drizzle/drizzle.module';
     ProductsModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      expandVariables: true,
     }),
   ],
   controllers: [],

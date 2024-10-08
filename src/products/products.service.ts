@@ -5,7 +5,7 @@ import { DRIZZLE } from 'src/drizzle/drizzle.module';
 import { DrizzleDB } from 'src/drizzle/types/drizzle';
 import { products } from 'src/drizzle/schema/schema';
 import { PaginationDTO } from 'src/common/dto/pagination.dto';
-import { and, count, eq } from 'drizzle-orm';
+import { and, count, eq, inArray } from 'drizzle-orm';
 import {
   RpcNoContentException,
   RpcNotFoundErrorException,
@@ -20,7 +20,7 @@ export class ProductsService {
   async findAll(paginationDTO: PaginationDTO) {
     const { page, limit } = paginationDTO;
     const totalCount = await this.db
-      .select({ count: count() })
+      .select({ count: count(products.id) })
       .from(products)
       .where(eq(products.available, true));
     const lastPage = Math.ceil(totalCount[0].count / paginationDTO.limit);
@@ -80,5 +80,13 @@ export class ProductsService {
         : 'Resource deleted successfully',
       data: product[0],
     };
+  }
+  async validate(ids: number[]) {
+    const existsIds = await this.db
+      .select({ id: products.id, price: products.price })
+      .from(products)
+      .where(inArray(products.id, ids));
+
+    return existsIds;
   }
 }
